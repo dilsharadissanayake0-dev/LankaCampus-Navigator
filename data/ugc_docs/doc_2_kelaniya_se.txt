@@ -1,0 +1,7 @@
+University of Kelaniya - Software Engineering (SE)
+    Stream: Physical Science
+    Minimum Z-score (Colombo District): 1.7210
+    Minimum Z-score (Gampaha District): 1.7105
+    Duration: 4 Years (BSc Hons)
+    Key Modules: Software Architecture, Web Engineering, Mobile Dev, DevOps, Cloud Computing.
+    Career Paths: Software Engineer, DevOps Engineer, Systems Architect.
