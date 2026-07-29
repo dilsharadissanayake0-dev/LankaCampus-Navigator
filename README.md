@@ -2,25 +2,37 @@
 
 > **An AI-Powered Multi-Agent RAG System for Sri Lankan State University Selection & Career Guidance**
 
-LankaCampus Navigator is an intelligent web application that helps Sri Lankan G.C.E. Advanced Level students identify eligible state university degree programmes based on their **Z-Score, A/L stream, and district**, while also providing personalised career guidance according to the latest **University Grants Commission (UGC)** admission guidelines.
+LankaCampus Navigator is an intelligent web application designed to help Sri Lankan G.C.E. Advanced Level students identify suitable state university degree programmes based on their **Z-Score, A/L stream, and district**.
 
-The system leverages a **Multi-Agent Retrieval-Augmented Generation (RAG)** architecture powered by **LangChain**, **ChromaDB**, and **Groq Llama-3.3**, enabling students to receive accurate university eligibility results together with strategic academic and career recommendations.
+The system provides personalised university selection and career guidance using the latest **University Grants Commission (UGC) admission guidelines**.
+
+Powered by a **Multi-Agent Retrieval-Augmented Generation (RAG)** architecture using **LangChain, ChromaDB, FastEmbed, and Groq Llama-3.3**, the platform delivers accurate eligibility analysis together with strategic academic and career recommendations.
+
+---
+
+## 🔗 Links
+
+🚀 **Live Application:**  
+https://lankacampus-navigator.streamlit.app
+
+📁 **GitHub Repository:**  
+https://github.com/dilsharadissanayake0-dev/LankaCampus-Navigator
 
 ---
 
 # 📌 Overview
 
-Every year, thousands of Sri Lankan A/L students find it difficult to navigate the lengthy UGC Admission Handbook to determine which university degree programmes they qualify for.
+Every year, thousands of Sri Lankan A/L students struggle to understand the complex UGC Admission Handbook and determine which university degree programmes they qualify for.
 
 **LankaCampus Navigator** simplifies this process by:
 
 - 🎯 Identifying eligible state university degree programmes
-- 📊 Comparing student Z-Scores against official district cut-off marks
-- 🎓 Recommending suitable degree pathways
-- 💼 Providing career guidance based on selected programmes
-- ⚠️ Informing students about required Aptitude Tests where applicable
+- 📊 Comparing student Z-Scores with official district cut-off marks
+- 🎓 Suggesting suitable degree pathways
+- 💼 Providing career opportunities related to selected degrees
+- ⚠️ Highlighting programmes requiring aptitude tests
 
-Instead of manually searching hundreds of pages in the UGC handbook, students receive instant AI-powered recommendations through a simple web interface.
+Instead of manually searching hundreds of pages of UGC documents, students can receive instant AI-powered recommendations through an interactive web application.
 
 ---
 
@@ -29,11 +41,11 @@ Instead of manually searching hundreds of pages in the UGC handbook, students re
 - 🤖 Multi-Agent AI Architecture
 - 📚 Retrieval-Augmented Generation (RAG)
 - 🔍 Semantic Search using ChromaDB
-- 🎓 University Eligibility Prediction
-- 📈 Official Z-Score Cut-off Comparison
+- 🎓 University Eligibility Analysis
+- 📈 Z-Score Cut-off Comparison
 - 💼 Degree & Career Recommendations
 - ⚠️ Aptitude Test Notifications
-- 🌐 Interactive Streamlit Web Application
+- 🌐 Interactive Streamlit Interface
 
 ---
 
@@ -41,94 +53,170 @@ Instead of manually searching hundreds of pages in the UGC handbook, students re
 
 ```mermaid
 graph TD
-    User([🎓 A/L Student]) -->|Inputs Z-Score, Stream, District| UI[💻 Streamlit Web Application]
-    UI -->|Triggers Pipeline| AgentPipe[⚙️ Multi-Agent Orchestrator]
 
-    subgraph Multi-Agent RAG System
-        Agent1[🤖 Eligibility & Cut-Off Agent]
-        Agent2[🤖 Course & Career Advisor Agent]
-        VS[(🗄️ ChromaDB Vector Store)]
-        LLM[🧠 Groq Llama-3.3]
+User([🎓 A/L Student]) -->|Z-Score, Stream, District| UI[💻 Streamlit Web Application]
 
-        AgentPipe --> Agent1
-        Agent1 -->|Similarity Search| VS
-        VS -->|Relevant UGC Documents| Agent1
-        Agent1 -->|Eligible Courses| Agent2
-        Agent1 <--> LLM
-        Agent2 <--> LLM
-    end
+UI --> AgentPipe[⚙️ Multi-Agent Orchestrator]
 
-    Agent2 -->|Career Guidance & Strategy| UI
+subgraph Multi-Agent RAG System
+
+Agent1[🤖 Eligibility & Cut-Off Agent]
+
+Agent2[🤖 Course & Career Advisor Agent]
+
+VS[(🗄️ ChromaDB Vector Store)]
+
+LLM[🧠 Groq Llama-3.3]
+
+AgentPipe --> Agent1
+
+Agent1 -->|Semantic Search| VS
+
+VS -->|UGC Documents| Agent1
+
+Agent1 -->|Eligible Programmes| Agent2
+
+Agent1 <--> LLM
+
+Agent2 <--> LLM
+
+end
+
+Agent2 -->|Career Guidance| UI
 ```
 
 ---
 
-# 🔄 Multi-Agent Workflow
+# 🔄 Multi-Agent Workflow & Design Patterns
 
-The system follows a sequential multi-agent workflow where each AI agent performs a specialised task.
+The system follows a sequential multi-agent workflow implementing several Agentic AI design patterns.
+
+---
 
 ## 🤖 Agent 1 – Eligibility & Cut-Off Agent
 
 ### Responsibilities
 
-- Accepts the student's:
+- Accepts student information:
   - Z-Score
   - A/L Stream
   - District
-- Performs semantic similarity search on ChromaDB.
-- Retrieves relevant UGC admission data.
-- Compares the student's Z-Score with official district cut-off marks.
-- Filters out ineligible degree programmes.
-- Produces a structured list of eligible state university courses.
 
-### AI Pattern
+- Performs semantic search using ChromaDB
+- Retrieves relevant UGC admission information
+- Compares student results against district cut-off marks
+- Filters eligible degree programmes
+- Generates structured eligibility results
 
-- Tool-Use
-- ReAct Pattern
-- Retrieval-Augmented Generation (RAG)
+### AI Design Patterns
+
+| Pattern | Usage |
+|---|---|
+| Tool-Use Pattern | Uses ChromaDB retrieval tools for document searching |
+| ReAct Pattern | Performs reasoning and action-based evaluation |
+| RAG Integration Pattern | Generates grounded responses using retrieved context |
 
 ---
 
-## 🤖 Agent 2 – Course & Career Advisor Agent
+# 🤖 Agent 2 – Course & Career Advisor Agent
 
 ### Responsibilities
 
-Receives the eligible degree programmes generated by Agent 1 and:
+- Receives eligible programmes from Agent 1
+- Explains degree areas and subject focus
+- Provides career pathways
+- Suggests industry opportunities
+- Identifies mandatory aptitude tests
+- Provides strategic UGC preference ordering advice
 
-- Explains each degree programme.
-- Highlights important subject modules.
-- Suggests suitable career pathways.
-- Recommends future industry opportunities.
-- Alerts students about mandatory Aptitude Tests (e.g., Architecture, Translation Studies).
-- Suggests strategic university preference ordering during UGC applications.
+### AI Design Patterns
 
-### AI Pattern
+| Pattern | Usage |
+|---|---|
+| Synthesis Pattern | Converts course information into career guidance |
+| Sequential Orchestrator Pattern | Receives and processes Agent 1 output |
 
-- Multi-Agent Synthesis Pattern
+---
+
+# ⚡ Model Choice Comparison & Justification
+
+| Task | Selected Model | Reason |
+|---|---|---|
+| Document Embedding | BAAI/bge-small-en-v1.5 (FastEmbed) | Fast local embedding with low latency and high semantic accuracy |
+| Eligibility Reasoning | Llama-3.3-70B-Versatile (Groq) | High reasoning capability for cutoff comparison |
+| Career Guidance Generation | Llama-3.3-70B-Versatile (Groq) | Strong contextual understanding and synthesis |
 
 ---
 
 # 🛠️ Technology Stack
 
 | Category | Technology |
-|-----------|------------|
+|---|---|
 | Programming Language | Python 3.10+ |
 | AI Framework | LangChain |
-| Multi-Agent Architecture | LangChain Agents |
-| Large Language Model | Groq (Llama-3.3-70B-Versatile) |
+| Multi-Agent Architecture | LangChain Agents / Sequential Chains |
+| Large Language Model | Groq Llama-3.3-70B-Versatile |
 | Embedding Model | BAAI/bge-small-en-v1.5 |
 | Embedding Library | FastEmbed |
 | Vector Database | ChromaDB |
 | Frontend | Streamlit |
-| Environment Variables | python-dotenv |
+| Environment Management | python-dotenv |
 | Version Control | Git & GitHub |
+
+---
+
+# 🔍 RAG Pipeline Workflow
+
+### 1. Document Processing
+
+Official UGC admission documents are processed using:
+
+- RecursiveCharacterTextSplitter
+- Chunk Size: 500
+- Chunk Overlap: 50
+
+### 2. Embedding Generation
+
+Document chunks are converted into vectors using:
+
+```
+BAAI/bge-small-en-v1.5
+```
+
+### 3. Vector Storage
+
+Generated embeddings are stored in:
+
+```
+ChromaDB
+```
+
+### 4. Retrieval
+
+Student inputs trigger semantic similarity search to retrieve relevant UGC information.
+
+### 5. Multi-Agent Processing
+
+```
+Student Input
+      |
+      ↓
+Eligibility Agent
+      |
+      ↓
+Course & Career Agent
+      |
+      ↓
+Final Recommendation
+```
 
 ---
 
 # 📂 Project Structure
 
-```text
+```
 LankaCampus-Navigator/
+
 │
 ├── app.py
 ├── requirements.txt
@@ -154,9 +242,9 @@ LankaCampus-Navigator/
 
 ---
 
-# 🚀 Installation Guide
+# 🚀 Installation & Local Setup Guide
 
-## 1. Clone the Repository
+## 1. Clone Repository
 
 ```bash
 git clone https://github.com/dilsharadissanayake0-dev/LankaCampus-Navigator.git
@@ -166,7 +254,7 @@ cd LankaCampus-Navigator
 
 ---
 
-## 2. Create a Virtual Environment
+## 2. Create Virtual Environment
 
 ### Windows
 
@@ -194,9 +282,9 @@ pip install -r requirements.txt
 
 ---
 
-# 🔑 Environment Variables
+## 4. Configure Environment Variables
 
-Create a `.env` file in the project root directory.
+Create a `.env` file in the project root:
 
 ```env
 GROQ_API_KEY=your_actual_groq_api_key_here
@@ -204,101 +292,40 @@ GROQ_API_KEY=your_actual_groq_api_key_here
 
 ---
 
-# ▶️ Running the Project
+# ▶️ Running the Application
 
-## Step 1 – Generate the UGC Knowledge Corpus
-
-```bash
-python src/generate_docs.py
-```
-
----
-
-## Step 2 – Build the ChromaDB Knowledge Base
+## Step 1: Build Knowledge Base
 
 ```bash
 python src/rag_pipeline.py
 ```
 
+This creates the ChromaDB vector database.
+
 ---
 
-## Step 3 – Launch the Streamlit Application
+## Step 2: Start Streamlit Application
 
 ```bash
 python -m streamlit run app.py
 ```
 
----
-
-# 🧪 Sample Test Case
-
-### Student Profile
-
-| Field | Value |
-|-------|-------|
-| Z-Score | **1.75** |
-| Stream | **Physical Science** |
-| District | **Colombo** |
+The application will open in your browser.
 
 ---
 
-## 🤖 Agent 1 Output
+# ⚠️ Known Limitations
 
-Eligible Degree Programmes
-
-- BSc in Software Engineering – University of Kelaniya
-- BSc Applied Sciences – University of Sri Jayewardenepura
-- Additional eligible programmes based on official UGC cut-off marks
-
----
-
-## 🤖 Agent 2 Output
-
-Career Recommendations
-
-- Software Engineer
-- Full Stack Developer
-- DevOps Engineer
-- Cloud Engineer
-
-Additional Guidance
-
-- Strategic UGC application preference ordering
-- Degree overview and subject modules
-- Notifications about any required Aptitude Tests
-
----
-
-# 🔍 How the RAG Pipeline Works
-
-1. UGC admission handbook is processed into structured documents.
-2. Documents are converted into embeddings using **FastEmbed (BAAI/bge-small-en-v1.5)**.
-3. Embeddings are stored in **ChromaDB**.
-4. Student queries are converted into semantic embeddings.
-5. Relevant admission information is retrieved using similarity search.
-6. Agent 1 evaluates university eligibility.
-7. Agent 2 generates personalised academic and career guidance.
-8. Results are displayed through the Streamlit interface.
-
----
-
-# 🎯 Future Improvements
-
-- Support for updated annual UGC handbooks
-- Sinhala and Tamil language support
-- University programme comparison
-- Career salary insights
-- Scholarship recommendations
-- Export results as PDF
-- Voice-enabled AI assistant
+- The knowledge base depends on the UGC handbook version stored in `data/`.
+- Annual Z-Score updates require rebuilding the ChromaDB index.
+- Groq API availability depends on usage limits and service availability.
 
 ---
 
 # 👨‍💻 Developed By
 
-**Dilshara Dissanayake** 
-**ITBIN-2313-0030**
-**Intake 13**
+**Dilshara Dissanayake**  
+ITBIN-2313-0030  
+Intake 13
 
 ---
-
