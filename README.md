@@ -13,10 +13,10 @@ Powered by a **Multi-Agent Retrieval-Augmented Generation (RAG)** architecture u
 ## 🔗 Links
 
 🚀 **Live Application:**  
-https://lankacampus-navigator.streamlit.app
+https://lankacampus-navigator-av3cn78dea2uggiv7nzb5z.streamlit.app/
 
 📁 **GitHub Repository:**  
-https://github.com/dilsharadissanayake0-dev/LankaCampus-Navigator
+https://github.com/dilsharadissanayake0-dev/LankaCampus-Navigator.git
 
 ---
 
