@@ -5,6 +5,9 @@ import os
 # Append src directory to system path for modular imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
 
+# --- EMBED API KEY FOR DEPLOYMENT ---
+os.environ["GROQ_API_KEY"] = "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"
+# ------------------------------------
 # 1. Page Configuration Setup
 st.set_page_config(
     page_title="LankaCampus Navigator",
