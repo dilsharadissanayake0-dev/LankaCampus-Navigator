@@ -1,66 +1,83 @@
 import streamlit as st
-from src.agents import run_lankacampus_navigator
+import sys
+import os
 
-# Streamlit Page Configuration
+# Append src directory to system path for modular imports
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
+
+# --- EMBED API KEY FOR DEPLOYMENT ---
+os.environ["GROQ_API_KEY"] = "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"
+# ------------------------------------
+# 1. Page Configuration Setup
 st.set_page_config(
     page_title="LankaCampus Navigator",
     page_icon="🎓",
     layout="wide"
 )
 
-# App Title & Header
+# 2. Application Header
 st.title("🎓 LankaCampus Navigator")
-st.subheader("AI-Powered University Admission & Career Guidance System")
+st.caption("🚀 AI-Powered Dual-Agent University Admission & Career Guidance System")
 st.markdown("---")
 
-# Sidebar - User Inputs
-st.sidebar.header("📋 Student Profile Input")
+# 3. Sidebar - Student Inputs & Profile
+with st.sidebar:
+    st.header("📋 Student Profile")
+    
+    stream = st.selectbox(
+        "Select A/L Stream:",
+        ["Physical Science", "Biological Science", "Commerce", "Arts", "Technology"]
+    )
+    
+    district = st.selectbox(
+        "Select District:",
+        ["Colombo", "Gampaha", "Kalutara", "Kandy", "Galle", "Matara", "Jaffna", "Kurunegala", "Other"]
+    )
+    
+    z_score = st.number_input(
+        "Enter Z-Score:",
+        min_value=0.0,
+        max_value=4.0,
+        value=1.50,
+        step=0.01
+    )
+    
+    st.markdown("---")
+    submit_btn = st.button("🔍 Find Eligible Degrees & Career Advice", use_container_width=True)
+    
 
-stream = st.sidebar.selectbox(
-    "Select your A/L Stream:",
-    ["Physical Science", "Biological Science", "Commerce", "Arts", "Technology"]
-)
 
-district = st.sidebar.selectbox(
-    "Select your District:",
-    ["Colombo", "Gampaha", "Kalutara", "Kandy", "Matale", "Nuwara Eliya", 
-     "Galle", "Matara", "Hambantota", "Jaffna", "Kurunegala", "Badulla", "Anuradhapura"]
-)
+# 4. Main Processing & Sequential Agent Execution
+if submit_btn:
+    with st.spinner("🤖 Multi-Agent RAG Pipeline is analyzing UGC handbook data..."):
+        try:
+            from agents import run_lankacampus_navigator
+            
+            results = run_lankacampus_navigator(z_score=str(z_score), stream=stream, district=district)
+            
+            st.session_state['agent1_res'] = results["eligible_courses"]
+            st.session_state['agent2_res'] = results["career_guidance"]
+            st.success("Analysis Complete!")
+        except Exception as e:
+            st.error(f"An error occurred while connecting to database: {str(e)}")
 
-z_score = st.sidebar.text_input("Enter your Z-Score:", value="1.75")
+# 5. Output Display Section using Streamlit Tabs
+if 'agent1_res' in st.session_state and 'agent2_res' in st.session_state:
+    
+    tab1, tab2 = st.tabs([
+        "📌 Step 1: Eligible Degrees & Cut-Offs (Agent 1)", 
+        "💡 Step 2: Strategic Career & Module Guidance (Agent 2)"
+    ])
+    
+    with tab1:
+        st.markdown("### 🤖 Agent 1: University Eligibility & Cut-Off Analysis")
+        st.info("Searches UGC Database via ChromaDB RAG Vector Store based on Z-Score, Stream, and District.")
+        st.markdown(st.session_state['agent1_res'])
+        
+    with tab2:
+        st.markdown("### 🤖 Agent 2: Course & Career Guidance Advisor")
+        st.success("Synthesizes career pathways, subject modules, and mandatory aptitude test information.")
+        st.markdown(st.session_state['agent2_res'])
 
-# Run Pipeline Button
-if st.sidebar.button("🔍 Find Eligible Courses & Career Advice"):
-    if not z_score:
-        st.error("Please enter a valid Z-Score!")
-    else:
-        with st.spinner("🤖 Multi-Agent System is processing your request..."):
-            try:
-                # Call Agent Communication Pipeline
-                results = run_lankacampus_navigator(
-                    z_score=z_score,
-                    stream=stream,
-                    district=district
-                )
-                
-                st.success("Analysis Complete!")
-                
-                # Layout Columns for Two Agents
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    st.header("📌 Agent 1: Eligibility & Cut-Offs")
-                    st.info("Searches UGC Database via RAG Vector Store")
-                    st.markdown(results["eligible_courses"])
-                    
-                with col2:
-                    st.header("💡 Agent 2: Career & Course Advisor")
-                    st.success("Synthesizes Guidance, Modules & Aptitude Info")
-                    st.markdown(results["career_guidance"])
-                    
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
-
-# Footer
-st.markdown("---")
-st.caption("Powered by LangChain, Groq LLM, ChromaDB & Streamlit | LankaCampus Navigator")
+else:
+    st.info("👈 Fill in your A/L Stream, District, and Z-Score in the sidebar and click 'Find Eligible Degrees' to start.")
