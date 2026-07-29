@@ -1,0 +1,6 @@
+University of Moratuwa - Computer Science & Engineering (CSE)
+    Stream: Physical Science
+    Minimum Z-score (Colombo District): 2.1500
+    Minimum Z-score (Gampaha District): 2.1200
+    Duration: 4 Years (BSc Eng Hons)
+    Key Modules: Computer Systems, Embedded Systems, Machine Learning, Cyber Security.

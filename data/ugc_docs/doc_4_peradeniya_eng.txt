@@ -1,0 +1,5 @@
+University of Peradeniya - Faculty of Engineering
+    Stream: Physical Science
+    Minimum Z-score (Kandy District): 1.9120
+    Minimum Z-score (Kurunegala District): 1.8900
+    Specializations: Civil, Mechanical, Electrical & Electronic, Computer Engineering.

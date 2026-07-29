@@ -1,0 +1,7 @@
+University of Colombo School of Computing (UCSC) - Computer Science (CS)
+    Stream: Physical Science / Direct Intake
+    Minimum Z-score (Colombo District): 1.8502
+    Minimum Z-score (Gampaha District): 1.8410
+    Minimum Z-score (Kandy District): 1.8211
+    Duration: 3 Years (BSc) / 4 Years (BSc Hons)
+    Key Modules: Data Structures, Algorithms, Artificial Intelligence, Database Systems.

@@ -1,0 +1,6 @@
+University of Colombo - Faculty of Medicine (MBBS)
+    Stream: Biological Science
+    Minimum Z-score (Colombo District): 2.2100
+    Minimum Z-score (Gampaha District): 2.1950
+    Duration: 5 Years
+    Requirements: A/L Biology, Chemistry, Physics with minimum C grades.
