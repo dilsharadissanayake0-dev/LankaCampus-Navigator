@@ -4,14 +4,22 @@ from langchain_groq import ChatGroq
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import FastEmbedEmbeddings
 
-# Environment variables load කිරීම (.env file එකෙන් API Key එක ගනී)
+# 1. Environment variables පැහැදිලිව Load කරගැනීම
 load_dotenv()
 
-# 1. Groq LLM එක initialize කිරීම (ලොකු වේගයක් සහිත නොමිලේ ලබාදෙන Llama-3 Model එක)
+# .env file එකෙන් API key එක නොලැබුණහොත් කෙළින්ම system environment එකෙන් පරීක්ෂා කිරීම
+groq_api_key = os.getenv("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")
+
+# 2. Groq LLM එක initialize කිරීම
 llm = ChatGroq(
     model_name="llama-3.3-70b-versatile",
-    temperature=0.3
+    temperature=0.3,
+    groq_api_key="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"
 )
+
+# -------------------------------------------------------------
+# පහළින් ඇති ඉතිරි Agents Code එක වෙනස් නොකර එලෙසම තබන්න
+# -------------------------------------------------------------
 
 # 2. Vector Store එක load කිරීම
 embeddings = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5")
