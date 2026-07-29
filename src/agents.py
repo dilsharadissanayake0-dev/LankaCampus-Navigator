@@ -4,55 +4,59 @@ from langchain_groq import ChatGroq
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import FastEmbedEmbeddings
 
-# 1. Load environment variables from .env file
 load_dotenv()
 
-# Retrieve Groq API Key securely
 groq_api_key = os.getenv("GROQ_API_KEY")
 
-# 2. Initialize Groq LLM
 llm = ChatGroq(
     model_name="llama-3.3-70b-versatile",
     temperature=0.3,
     groq_api_key=groq_api_key
 )
 
-# 3. Load Persistent Vector Store (ChromaDB)
-embeddings = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5")
-vectorstore = Chroma(
-    persist_directory="./chroma_db",
-    embedding_function=embeddings
-)
+# Absolute path resolution to project root's chroma_db
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, ".."))
+CHROMA_DIR = os.path.join(PROJECT_ROOT, "chroma_db")
 
-# -------------------------------------------------------------
-# AGENT 1: Eligibility & Cut-Off Agent (Tool-Use / ReAct Pattern)
-# -------------------------------------------------------------
+
 def eligibility_agent(student_profile: str) -> str:
     """
     Searches the RAG Vector Store and determines the list of eligible degree programs.
     """
-    # Retrieve top 4 relevant context documents from Vector Store
-    docs = vectorstore.similarity_search(student_profile, k=4)
-    retrieved_info = "\n\n".join([doc.page_content for doc in docs])
+    embeddings = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+    vectorstore = Chroma(
+        persist_directory=CHROMA_DIR,
+        embedding_function=embeddings
+    )
+
+    docs = vectorstore.similarity_search(student_profile, k=6)
+    retrieved_context = "\n\n".join([f"Document Content:\n{doc.page_content}" for doc in docs])
     
     prompt = f"""
-    You are the 'Eligibility & Cut-Off Agent' for Sri Lankan State Universities.
-    Based ONLY on the retrieved UGC handbook data below, identify and list the eligible degree programs for the student.
+    You are the official 'Eligibility & Cut-Off Agent' for Sri Lankan State Universities.
     
-    Student Profile: {student_profile}
-    
-    Retrieved UGC Data:
-    {retrieved_info}
-    
-    Provide a clear list of eligible courses with University Name, Course Name, and Minimum Z-Score required.
+    CRITICAL INSTRUCTION:
+    Use the following retrieved UGC Handbook Context to analyze and state the eligible degree programs.
+    Do NOT state that data is missing.
+
+    ===================================================
+    RETRIEVED UGC HANDBOOK CONTEXT DATA:
+    {retrieved_context}
+    ===================================================
+
+    Student Profile:
+    {student_profile}
+
+    Based on the context above, provide a clear, structured Markdown output:
+    1. List the Eligible Degree Programs with Exact University Names and minimum Z-scores.
+    2. Explicitly specify the University Name for each course (e.g., University of Colombo, University of Moratuwa).
     """
     
     response = llm.invoke(prompt)
     return response.content
 
-# -------------------------------------------------------------
-# AGENT 2: Course & Career Advisor Agent (Synthesis Pattern)
-# -------------------------------------------------------------
+
 def career_advisor_agent(eligible_courses_info: str) -> str:
     """
     Provides strategic career advice based STRICTLY on the output of Agent 1.
@@ -60,50 +64,33 @@ def career_advisor_agent(eligible_courses_info: str) -> str:
     prompt = f"""
     You are the 'Course & Career Advisor Agent' for Sri Lankan students.
     
-    CRITICAL INSTRUCTIONS:
-    - Strictly base your response ONLY on the eligible courses listed below provided by Agent 1.
-    - NEVER invent, assume, or add hypothetical courses or Z-Scores.
-    - NEVER mention 'UGC handbook data is not provided'. Treat the input as authentic and complete.
+    CRITICAL INSTRUCTION:
+    - Base your response ONLY on the eligible courses and university names provided by Agent 1 below.
+    - NEVER say 'data is not available' or 'general outline'.
+    - Mention the specific University Names and Degree Courses provided by Agent 1.
 
-    --- ELIGIBLE COURSES FROM AGENT 1 ---
+    ===================================================
+    ELIGIBLE COURSES FROM AGENT 1:
     {eligible_courses_info}
-    -------------------------------------
-    
-    Based ONLY on the list above, provide:
-    1. 🎯 **Career Opportunities**: A short summary for each eligible degree course mentioned above.
-    2. 📝 **Aptitude Tests**: Highlight if any of the above courses require mandatory Aptitude Tests.
-    3. 💡 **Application Guidance**: Practical advice on how the student should order these specific eligible courses in their UGC handbook application form.
-    
-    Keep the advice encouraging, structured, and easy to understand.
+    ===================================================
+
+    Based on Agent 1's list above, provide:
+    1. 🎯 **Career Opportunities**: Specific pathways for each degree/university mentioned.
+    2. 📝 **Mandatory Aptitude Tests**: Highlight if any specific degree requires an aptitude test.
+    3. 💡 **UGC Application Strategy**: How to prioritize these specific university options in the application form.
     """
     
     response = llm.invoke(prompt)
     return response.content
 
-# -------------------------------------------------------------
-# AGENT-TO-AGENT PIPELINE (Sequential Communication Flow)
-# -------------------------------------------------------------
+
 def run_lankacampus_navigator(z_score: str, stream: str, district: str) -> dict:
-    """
-    Orchestrates the sequential execution of Agent 1 and Agent 2.
-    """
-    student_profile = f"Z-Score: {z_score}, Stream: {stream}, District: {district}"
+    student_profile = f"Stream: {stream}, District: {district}, Z-Score: {z_score}"
     
-    # Step 1: Execute Eligibility Agent
     eligible_courses = eligibility_agent(student_profile)
-    
-    # Step 2: Pass Agent 1 output directly to Career Advisor Agent
     career_guidance = career_advisor_agent(eligible_courses)
     
     return {
         "eligible_courses": eligible_courses,
         "career_guidance": career_guidance
     }
-
-if __name__ == "__main__":
-    # Local Testing Execution
-    result = run_lankacampus_navigator(z_score="1.75", stream="Physical Science", district="Colombo")
-    print("\n--- ELIGIBILITY AGENT OUTPUT ---")
-    print(result["eligible_courses"])
-    print("\n--- CAREER ADVISOR AGENT OUTPUT ---")
-    print(result["career_guidance"])
