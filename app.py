@@ -42,13 +42,7 @@ with st.sidebar:
     st.markdown("---")
     submit_btn = st.button("🔍 Find Eligible Degrees & Career Advice", use_container_width=True)
     
-    # Sidebar Developer Information
-    st.markdown("---")
-    st.markdown("""
-    ### 👨‍💻 Developed By
-    **Dilshara Dissanayake** ITBIN-2313-0030  
-    Intake 13
-    """)
+
 
 # 4. Main Processing & Sequential Agent Execution
 if submit_btn:
